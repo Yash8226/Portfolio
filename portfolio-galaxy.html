@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yash | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            cyan: '#00f2fe',
+                            blue: '#4facfe',
+                            purple: '#7f00ff',
+                            pink: '#e100ff',
+                            dark: '#0b0f19',
+                            card: '#151c2e',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        'pulse-glow': {
+                            '0%, 100%': { opacity: 0.4 },
+                            '50%': { opacity: 0.8 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --card-alpha: 0.22; --item-alpha: 0.08; --nav-alpha: 0.38;
+            --border-alpha: 0.32; --glow-alpha: 0.35;
+            --nebula-tint-1: 15, 23, 42; --nebula-tint-2: 38, 24, 78; --nebula-tint-3: 14, 36, 68;
+            --border-rgb: 129, 140, 248;
+        }
+        #bg-canvas {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; pointer-events: none; opacity: 0; transition: opacity 1s ease;
+        }
+        body { background-color: #060913; color: #f3f4f6; overflow-x: hidden; }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(var(--nebula-tint-1), calc(var(--card-alpha) + .4)), rgba(var(--nebula-tint-2), calc(var(--card-alpha) + .32)));
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(var(--border-rgb), calc(var(--border-alpha) * .45));
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-nav {
+            background: rgba(var(--nebula-tint-1), calc(var(--nav-alpha) + .45));
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; }
+        .glow-hover:hover {
+            transform: translateY(-8px);
+            border-color: rgba(79, 172, 254, 0.5);
+            box-shadow: 0 12px 30px -10px rgba(79, 172, 254, 0.3), 0 0 20px 0 rgba(127, 0, 255, 0.2);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 30%, #7f00ff 70%, #e100ff 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .gradient-text-alt {
+            background: linear-gradient(135deg, #e100ff 0%, #00f2fe 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .btn-glow { position: relative; z-index: 1; overflow: hidden; }
+        .btn-glow::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, #00f2fe, #7f00ff, #e100ff);
+            z-index: -1; transition: opacity 0.4s ease; opacity: 0.9;
+        }
+        .btn-glow:hover::before { opacity: 1; filter: brightness(1.2); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4facfe; }
+    </style>
+</head>
+<body class="font-sans antialiased text-gray-200">
+
+    <!-- Galaxy collision and black hole background -->
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <a href="#hero" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-cyan via-brand-purple to-brand-pink p-[2px] transition-transform duration-300 group-hover:scale-110">
+                        <div class="w-full h-full bg-brand-dark rounded-[10px] flex items-center justify-center">
+                            <span class="font-extrabold text-xl gradient-text">&lt;/&gt;</span>
+                        </div>
+                    </div>
+                    <span class="font-bold text-lg tracking-wider text-white group-hover:text-brand-cyan transition-colors">
+                        YASH<span class="text-brand-cyan">.DEV</span>
+                    </span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#about" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors hover:scale-105 transform">About</a>
+                    <a href="#skills" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors hover:scale-105 transform">Skills</a>
+                    <a href="#education" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors hover:scale-105 transform">Education</a>
+                    <a href="#projects" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors hover:scale-105 transform">Projects</a>
+                    <a href="#contact" class="text-sm font-medium text-gray-300 hover:text-brand-cyan transition-colors hover:scale-105 transform">Contact</a>
+                    <a href="#contact" class="btn-glow text-white text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full shadow-lg hover:shadow-brand-cyan/20 transition-all">Let's Connect</a>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" type="button" class="text-gray-300 hover:text-white focus:outline-none p-2 rounded-lg bg-gray-800/50" aria-label="Toggle Navigation">
+                        <i class="fas fa-bars text-xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="hidden md:hidden glass-card border-t border-gray-800/80 px-4 pt-4 pb-6 space-y-3" id="mobile-menu">
+            <a href="#about" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50">About</a>
+            <a href="#skills" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50">Skills</a>
+            <a href="#education" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50">Education</a>
+            <a href="#projects" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50">Projects</a>
+            <a href="#contact" class="mobile-link block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800/50">Contact</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="min-h-screen pt-28 pb-16 flex items-center justify-center relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto text-center space-y-8">
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-card border border-brand-cyan/30 text-xs sm:text-sm font-semibold text-brand-cyan animate-pulse-glow">
+                <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span>
+                <span>Class 11 Student &amp; Aspiring Software Developer</span>
+            </div>
+
+            <div>
+                <p class="text-xl sm:text-2xl font-medium text-gray-300">Hi, I'm 👋</p>
+                <p class="text-6xl sm:text-8xl md:text-9xl font-black tracking-tight gradient-text-alt leading-none mt-2">YASH</p>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-tight">
+                Crafting Code &amp; Building <br class="hidden sm:inline"/>
+                <span class="gradient-text">Future Technology</span>
+            </h1>
+
+            <p class="text-lg sm:text-2xl text-gray-400 font-light max-w-3xl mx-auto h-12 flex items-center justify-center">
+                <span>I build </span>
+                <span id="typing-text" class="font-semibold text-brand-cyan ml-2 border-r-2 border-brand-cyan pr-1"></span>
+            </p>
+
+            <p class="text-sm sm:text-base text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                Welcome to my digital playground! Passed Grade 10 with distinction and currently diving deep into computer science fundamentals, backend logic, and full-stack web architectures.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <a href="#projects" class="w-full sm:w-auto btn-glow text-white font-semibold px-8 py-3.5 rounded-xl shadow-xl hover:scale-105 transition-all flex items-center justify-center space-x-2">
+                    <span>View Projects</span>
+                    <i class="fas fa-arrow-right text-sm"></i>
+                </a>
+                <a href="#contact" class="w-full sm:w-auto glass-card hover:bg-gray-800/60 text-gray-200 hover:text-white font-semibold px-8 py-3.5 rounded-xl transition-all hover:scale-105 border border-gray-700/60 flex items-center justify-center space-x-2">
+                    <span>Get In Touch</span>
+                    <i class="fas fa-envelope text-sm text-brand-purple"></i>
+                </a>
+            </div>
+
+            <div class="flex justify-center space-x-6 pt-6">
+                <a href="https://github.com/yash8226" target="_blank" class="text-gray-400 hover:text-brand-cyan text-xl transition-all hover:scale-125" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com" target="_blank" class="text-gray-400 hover:text-brand-blue text-xl transition-all hover:scale-125" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:your-real-email@gmail.com" class="text-gray-400 hover:text-brand-pink text-xl transition-all hover:scale-125" title="Email"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center space-y-3 mb-16">
+                <p class="text-xs font-extrabold tracking-widest text-brand-cyan uppercase">Get To Know Me</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white">About My Journey</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-5">
+                    <div class="glass-card rounded-3xl p-6 glow-hover relative overflow-hidden group">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-brand-purple/20 rounded-full blur-2xl group-hover:bg-brand-cyan/30 transition-all"></div>
+                        <div class="flex flex-col items-center text-center space-y-4">
+                            <div class="w-32 h-32 rounded-2xl bg-gradient-to-tr from-brand-cyan via-brand-purple to-brand-pink p-[3px] shadow-2xl">
+                                <div class="w-full h-full bg-brand-dark rounded-[13px] flex items-center justify-center overflow-hidden">
+                                    <i class="fas fa-user-astronaut text-5xl text-brand-cyan animate-float"></i>
+                                </div>
+                            </div>
+                            <h3 class="text-4xl font-black text-white tracking-tight">Yash</h3>
+                            <p class="text-sm font-semibold gradient-text-alt">Aspiring Software Engineer</p>
+                            <p class="text-xs text-brand-cyan font-medium px-3 py-1 rounded-full bg-brand-cyan/10">11th Grade CS Student</p>
+                            <p class="text-xs text-gray-400 leading-relaxed">
+                                Driven by logic, mathematical problem solving, and a curiosity for how complex computer systems interact under the hood.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="glass-card rounded-3xl p-6 sm:p-8 space-y-4 glow-hover">
+                        <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                            <i class="fas fa-code-branch text-brand-cyan"></i>
+                            <span>Passionate Student Developer</span>
+                        </h3>
+                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+                            Hi, I'm Yash! Having recently completed my 10th-grade board examinations with strong academic results, I stepped into 11th grade with a firm determination to turn code into real-world applications.
+                        </p>
+                        <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+                            My focus centers on mastering core programming languages like <span class="text-brand-cyan font-semibold">C</span> and <span class="text-brand-cyan font-semibold">C++</span> for algorithmic efficiency, while constructing web applications using <span class="text-brand-blue font-semibold">JavaScript, Node.js</span>, and relational databases like <span class="text-brand-pink font-semibold">SQL</span>.
+                        </p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
+                            <div class="p-3 rounded-2xl bg-gray-800/40 border border-gray-700/50 text-center">
+                                <h4 class="text-lg font-bold text-brand-cyan">100%</h4>
+                                <p class="text-xs text-gray-400">Dedication</p>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-gray-800/40 border border-gray-700/50 text-center">
+                                <h4 class="text-lg font-bold text-brand-purple">10+</h4>
+                                <p class="text-xs text-gray-400">Mini Projects</p>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-gray-800/40 border border-gray-700/50 text-center col-span-2 sm:col-span-1">
+                                <h4 class="text-lg font-bold text-brand-pink">Grade 11</h4>
+                                <p class="text-xs text-gray-400">Science / CS</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center space-y-3 mb-16">
+                <p class="text-xs font-extrabold tracking-widest text-brand-cyan uppercase">Technical Capabilities</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white">Skills &amp; Technologies</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xl font-extrabold group-hover:scale-110 transition-transform">C</div>
+                        <h3 class="text-xl font-bold text-white">C Language</h3>
+                        <p class="text-xs text-gray-400">Foundational logic, pointers, memory management, and structured programming concepts.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">80%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-brand-cyan to-brand-blue rounded-full" style="width: 80%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-600/10 text-blue-500 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fas fa-file-code"></i></div>
+                        <h3 class="text-xl font-bold text-white">C++</h3>
+                        <p class="text-xs text-gray-400">Object-Oriented Programming (OOP), Data Structures, and algorithmic problem solving.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">75%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-brand-cyan to-brand-blue rounded-full" style="width: 75%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fab fa-html5"></i></div>
+                        <h3 class="text-xl font-bold text-white">HTML5</h3>
+                        <p class="text-xs text-gray-400">Semantic markup, clean web accessibility standards, and responsive web structure.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">90%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-orange-400 to-red-500 rounded-full" style="width: 90%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-400/10 text-blue-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fab fa-css3-alt"></i></div>
+                        <h3 class="text-xl font-bold text-white">CSS3 &amp; Tailwind</h3>
+                        <p class="text-xs text-gray-400">Modern layout techniques (Flexbox/Grid), glassmorphic styling, keyframe animations.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">85%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full" style="width: 85%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fab fa-js-square"></i></div>
+                        <h3 class="text-xl font-bold text-white">JavaScript</h3>
+                        <p class="text-xs text-gray-400">DOM manipulation, ES6+ features, asynchronous logic, and dynamic UI interactions.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">80%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full" style="width: 80%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/10 text-green-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fab fa-node-js"></i></div>
+                        <h3 class="text-xl font-bold text-white">Node.js</h3>
+                        <p class="text-xs text-gray-400">Basic backend microservers, REST API setup, runtime environment exploration.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">65%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-green-400 to-emerald-600 rounded-full" style="width: 65%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fas fa-database"></i></div>
+                        <h3 class="text-xl font-bold text-white">SQL</h3>
+                        <p class="text-xs text-gray-400">Writing relational queries, filtering tables, joins, data manipulation (DML/DDL).</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">70%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full" style="width: 70%"></div></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 glow-hover flex flex-col justify-between group">
+                    <div class="space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform"><i class="fas fa-server"></i></div>
+                        <h3 class="text-xl font-bold text-white">DBMS Concepts</h3>
+                        <p class="text-xs text-gray-400">Database architecture, primary/foreign keys, normalization, and ACID properties.</p>
+                    </div>
+                    <div class="mt-6 space-y-2">
+                        <div class="flex justify-between text-xs font-medium"><span class="text-gray-400">Proficiency</span><span class="text-brand-cyan">72%</span></div>
+                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full" style="width: 72%"></div></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Education Section -->
+    <section id="education" class="py-20 relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center space-y-3 mb-16">
+                <p class="text-xs font-extrabold tracking-widest text-brand-cyan uppercase">Academic Qualifications</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white">Education Milestones</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="relative border-l-2 border-gray-800 ml-4 md:ml-32 space-y-12">
+
+                <div class="relative pl-8 md:pl-12 group">
+                    <div class="absolute -left-[17px] top-1.5 w-8 h-8 rounded-full bg-brand-dark border-2 border-brand-cyan flex items-center justify-center text-brand-cyan group-hover:scale-125 transition-transform">
+                        <i class="fas fa-book-reader text-xs"></i>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 sm:p-8 glow-hover">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">Current Pursuing</span>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">Senior Secondary School (Grade 11)</h3>
+                            </div>
+                            <span class="text-sm text-gray-400 font-medium">2026 - Present</span>
+                        </div>
+                        <p class="text-brand-purple font-semibold text-sm mb-2">Science &amp; Computer Science Stream</p>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Currently building strong foundations in Advanced Physics, Mathematics, and Computer Science concepts. Actively implementing C++ programs, Data Structures logic, and database schemas alongside regular school coursework.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="relative pl-8 md:pl-12 group">
+                    <div class="absolute -left-[17px] top-1.5 w-8 h-8 rounded-full bg-brand-dark border-2 border-brand-pink flex items-center justify-center text-brand-pink group-hover:scale-125 transition-transform">
+                        <i class="fas fa-award text-xs"></i>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 sm:p-8 glow-hover">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                            <div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-pink/10 text-brand-pink border border-brand-pink/20">Passed with Distinction</span>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">Secondary School Certificate (Grade 10)</h3>
+                            </div>
+                            <span class="text-sm text-gray-400 font-medium">Completed</span>
+                        </div>
+                        <p class="text-brand-pink font-semibold text-sm mb-2">High Academic Achievement</p>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Successfully passed Grade 10 Board Examinations with outstanding results. Recognized for top performance in Mathematics and Science, which ignited the passion for computer logic and software creation.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center space-y-3 mb-16">
+                <p class="text-xs font-extrabold tracking-widest text-brand-cyan uppercase">Hands-On Practice</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white">Student Projects</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                <div class="glass-card rounded-2xl overflow-hidden glow-hover flex flex-col justify-between group">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-2xl"><i class="fas fa-gamepad"></i></div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-brand-cyan transition-colors">C++ Text Console Game</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">An interactive text-based RPG console game built entirely in C++, featuring inventory management, random monster encounters, and score saving.</p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-cyan border border-gray-700">C++</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-cyan border border-gray-700">OOP</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-cyan border border-gray-700">File I/O</span>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-900/40 border-t border-gray-800/80 flex justify-between items-center text-xs">
+                        <a href="#" class="text-brand-cyan font-medium hover:underline flex items-center gap-1"><span>Source Code</span> <i class="fas fa-external-link-alt text-[10px]"></i></a>
+                        <span class="text-gray-500">Console App</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden glow-hover flex flex-col justify-between group">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-purple/10 text-brand-purple flex items-center justify-center text-2xl"><i class="fas fa-database"></i></div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-brand-purple transition-colors">Student Management SQL</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">A relational database system schema designed to store student records, attendance, and exam grades with custom SQL views and procedures.</p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-purple border border-gray-700">SQL</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-purple border border-gray-700">DBMS</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-purple border border-gray-700">Node.js</span>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-900/40 border-t border-gray-800/80 flex justify-between items-center text-xs">
+                        <a href="#" class="text-brand-purple font-medium hover:underline flex items-center gap-1"><span>Repository</span> <i class="fas fa-external-link-alt text-[10px]"></i></a>
+                        <span class="text-gray-500">Database System</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden glow-hover flex flex-col justify-between group">
+                    <div class="p-6 space-y-4">
+                        <div class="w-12 h-12 rounded-xl bg-brand-pink/10 text-brand-pink flex items-center justify-center text-2xl"><i class="fas fa-laptop-code"></i></div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-brand-pink transition-colors">Interactive Student Web Dashboard</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">A sleek frontend dashboard for managing homework schedules, assignment track timers, and quick code snippets for study groups.</p>
+                        <div class="flex flex-wrap gap-2 pt-2">
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-pink border border-gray-700">HTML5</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-pink border border-gray-700">Tailwind</span>
+                            <span class="px-2.5 py-1 rounded-md text-[10px] font-semibold bg-gray-800 text-brand-pink border border-gray-700">JS</span>
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-900/40 border-t border-gray-800/80 flex justify-between items-center text-xs">
+                        <a href="#" class="text-brand-pink font-medium hover:underline flex items-center gap-1"><span>Live Preview</span> <i class="fas fa-external-link-alt text-[10px]"></i></a>
+                        <span class="text-gray-500">Web Application</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 relative px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center space-y-3 mb-16">
+                <p class="text-xs font-extrabold tracking-widest text-brand-cyan uppercase">Say Hello</p>
+                <h2 class="text-3xl sm:text-5xl font-bold text-white">Contact Me</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand-cyan to-brand-purple mx-auto rounded-full"></div>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 sm:p-10 glow-hover">
+                <form id="contact-form" class="space-y-6" onsubmit="handleFormSubmit(event)">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label for="name" class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Your Name</label>
+                            <input type="text" id="name" required placeholder="John Doe"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-900/60 border border-gray-700/80 text-white placeholder-gray-500 focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan transition-all text-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="email" class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Your Email</label>
+                            <input type="email" id="email" required placeholder="john@example.com"
+                                class="w-full px-4 py-3 rounded-xl bg-gray-900/60 border border-gray-700/80 text-white placeholder-gray-500 focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan transition-all text-sm">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="subject" class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Subject</label>
+                        <input type="text" id="subject" required placeholder="Collaboration / Inquiry"
+                            class="w-full px-4 py-3 rounded-xl bg-gray-900/60 border border-gray-700/80 text-white placeholder-gray-500 focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan transition-all text-sm">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="message" class="text-xs font-semibold text-gray-300 uppercase tracking-wider">Message</label>
+                        <textarea id="message" rows="4" required placeholder="Write your message here..."
+                            class="w-full px-4 py-3 rounded-xl bg-gray-900/60 border border-gray-700/80 text-white placeholder-gray-500 focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan transition-all text-sm resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full btn-glow text-white font-bold py-4 rounded-xl shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center space-x-2">
+                        <i class="fas fa-paper-plane text-sm"></i>
+                        <span>Send Message</span>
+                    </button>
+                </form>
+
+                <div id="form-feedback" class="hidden mt-4 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-300 text-sm text-center font-medium">
+                    <i class="fas fa-check-circle mr-2"></i> Thank you! Your message has been simulated and sent successfully.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800/80 py-8 glass-nav">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-4">
+            <p class="text-xs text-gray-400">
+                Designed &amp; Built by Yash &copy; 2026. Built with HTML5, CSS3, Tailwind &amp; JS.
+            </p>
+            <div class="flex justify-center space-x-4 text-gray-500 text-xs">
+                <span>Grade 11 High School Student</span>
+                <span>&bull;</span>
+                <span>Future Software Engineer</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Typing animation
+        const typingPhrases = [
+            "C & C++ Algorithms.",
+            "Dynamic Web Applications.",
+            "Node.js & Express Backends.",
+            "Relational SQL Databases."
+        ];
+        let phraseIndex = 0, charIndex = 0, isDeleting = false;
+        const typingSpeed = 80, deletingSpeed = 40, delayBetweenPhrases = 1800;
+        const typingElement = document.getElementById('typing-text');
+
+        function typeEffect() {
+            const currentPhrase = typingPhrases[phraseIndex];
+            if (isDeleting) {
+                typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingElement.textContent = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            let delta = isDeleting ? deletingSpeed : typingSpeed;
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                delta = delayBetweenPhrases;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % typingPhrases.length;
+                delta = 400;
+            }
+            setTimeout(typeEffect, delta);
+        }
+
+        // 2. Mobile menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const open = !mobileMenu.classList.contains('hidden');
+            menuIcon.classList.toggle('fa-times', open);
+            menuIcon.classList.toggle('fa-bars', !open);
+        });
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            });
+        });
+
+        // 4. Contact form (no alert)
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const feedback = document.getElementById('form-feedback');
+            feedback.classList.remove('hidden');
+            document.getElementById('contact-form').reset();
+            setTimeout(() => feedback.classList.add('hidden'), 5000);
+        }
+
+        window.onload = function () {
+            typeEffect();
+        };
+    </script>
+    <script>
+(() => {
+    // Nebula spotlight tracking on cards
+    document.querySelectorAll('.glass-card').forEach(card => {
+        card.addEventListener('pointermove', e => {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+            card.style.setProperty('--my', `${e.clientY - r.top}px`);
+        }, { passive: true });
+    });
+
+    // ===== 3D galaxy collision + black hole engine =====
+    const c = document.getElementById('bg-canvas');
+    const x = c.getContext('2d', { alpha: false });
+    const rootStyle = document.documentElement.style;
+
+    const TAU = Math.PI * 2, PR = 180, PA = 650, SP = [0, 2, 1];
+    const BH_ACTIVE_DUR = 5.5;
+    const BH_ABSORB_DUR = 5.5;
+    const BH_TOTAL_DUR = BH_ACTIVE_DUR + BH_ABSORB_DUR;
+
+    let W = 0, H = 0, D = 1, DD = 1, GM, e2, g = [], S, t = 0, last = 0, bg, b1, b2, b1c, b2c, ZM = 1, bl = null, bh = null, VH2, RC2, RT2;
+    let mx = -1e4, my = -1e4, pw = 0, pt = 0, U, V, P;
+    let waveCount = 0, nextGalaxyCount = 2, initTime = 0;
+    let isMobile = false, lowPower = false;
+    let smoothAlpha = 0.22;
+
+    const pointerStars = [];
+    const rnd = Math.random, gauss = () => (rnd() + rnd() + rnd() + rnd() - 2) / .8;
+    const PAL = [
+        ['255,190,120', '255,208,155', '255,170,100'],
+        ['170,200,255', '200,220,255', '150,185,255'],
+        ['255,240,220', '255,225,190', '255,205,150']
+    ];
+
+    const mk = (r, g, b, sz) => {
+        const k = document.createElement('canvas');
+        k.width = k.height = sz;
+        const q = k.getContext('2d'), h = sz / 2, gr = q.createRadialGradient(h, h, 0, h, h, h);
+        gr.addColorStop(0, `rgba(${r},${g},${b},1)`);
+        gr.addColorStop(.18, `rgba(${r},${g},${b},.5)`);
+        gr.addColorStop(.5, `rgba(${r},${g},${b},.1)`);
+        gr.addColorStop(1, `rgba(${r},${g},${b},0)`);
+        q.fillStyle = gr;
+        q.fillRect(0, 0, sz, sz);
+        return k;
+    };
+
+    const spr = [
+        mk(255, 208, 155, 64),
+        mk(255, 244, 230, 64),
+        mk(165, 198, 255, 64),
+        mk(255, 105, 170, 64),
+        mk(8, 6, 16, 64),
+        mk(129, 140, 248, 36),
+        mk(56, 189, 248, 36),
+        mk(192, 132, 252, 36)
+    ];
+
+    function size() {
+        W = window.innerWidth;
+        H = window.innerHeight;
+        isMobile = W < 768;
+        const cores = navigator.hardwareConcurrency || 4;
+        lowPower = isMobile || cores <= 4;
+
+        const rawDpr = window.devicePixelRatio || 1;
+        D = isMobile ? Math.min(rawDpr, 1.25) : Math.min(Math.max(rawDpr, 1.25), 1.65);
+
+        c.width = Math.round(W * D);
+        c.height = Math.round(H * D);
+        c.style.width = W + 'px';
+        c.style.height = H + 'px';
+        x.setTransform(D, 0, 0, D, 0, 0);
+
+        b1 = document.createElement('canvas');
+        b1.width = Math.max(1, Math.ceil(c.width / (isMobile ? 5 : 4)));
+        b1.height = Math.max(1, Math.ceil(c.height / (isMobile ? 5 : 4)));
+        b2 = document.createElement('canvas');
+        b2.width = Math.max(1, Math.ceil(b1.width / 3));
+        b2.height = Math.max(1, Math.ceil(b1.height / 3));
+        b1c = b1.getContext('2d');
+        b2c = b2.getContext('2d');
+        b1c.imageSmoothingQuality = b2c.imageSmoothingQuality = isMobile ? 'medium' : 'high';
+
+        bg = [];
+        const bgCount = W < 480 ? 110 : isMobile ? 160 : 300;
+        for (let i = 0; i < bgCount; i++) {
+            const u = rnd();
+            bg.push([
+                rnd() * W, rnd() * H, .5 + rnd() * 1.1, rnd() * TAU, .25 + rnd() * .65,
+                u < .18 ? 'rgba(190,210,255,' : u < .36 ? 'rgba(255,225,190,' : 'rgba(255,255,255,'
+            ]);
+        }
+    }
+
+    function init(fromEdges = false) {
+        const numG = 2;
+        waveCount++;
+        nextGalaxyCount = numG === 2 ? 3 : 2;
+
+        const dx = W * .62, dy = H * .34, d = Math.hypot(dx, dy);
+        DD = d;
+        GM = d * d * d * .0078;
+        e2 = (d * .03) ** 2;
+        const R = d * (numG === 3 ? .155 : .18);
+        VH2 = .5 * GM / R;
+        RC2 = (R * .6) ** 2;
+        RT2 = (R * 3) ** 2;
+        const vc = r => Math.sqrt(GM * r * r / Math.pow(r * r + e2, 1.5) + VH2 * r * r * Math.exp(-r * r / RT2) / (r * r + RC2));
+
+        g = [];
+        // FIX: edge spawns are closer so the galaxies stay gravitationally bound
+        const spawnDist = fromEdges ? d * .6 : d * .44;
+        const vt = .42 * Math.sqrt(2 * GM / spawnDist);
+        const baseAngle = (rnd() - .5) * .5;
+
+        // Galaxies circle each other at a safe distance and never collide
+        const sepL = numG === 2 ? 2 * spawnDist : spawnDist * Math.sqrt(3);
+        const r2c = sepL * sepL + e2;
+        const fc = GM / (r2c * Math.sqrt(r2c)) + VH2 * Math.exp(-r2c / RT2) / (r2c + RC2);
+        const aRad = numG === 2 ? fc * sepL : 2 * fc * sepL * Math.cos(Math.PI / 6);
+        const orbitV = Math.sqrt(aRad * spawnDist);
+
+        for (let gi = 0; gi < numG; gi++) {
+            const ang = baseAngle + (gi * TAU / numG);
+            const ca = Math.cos(ang), sa = Math.sin(ang);
+            const px = -sa, py = ca;
+            // FIX: slower infall from edges and very little sideways speed => near head-on collision
+            const tangSpeed = orbitV * .93;
+            g.push({
+                x: ca * spawnDist,
+                y: sa * spawnDist,
+                z: (gi - (numG - 1) / 2) * d * .07,
+                vx: px * tangSpeed,
+                vy: py * tangSpeed,
+                vz: 0,
+                dir: gi % 2 === 0 ? 1 : -1,
+                tx: .85 * (gi % 2 === 0 ? 1 : -.75) + (rnd() - .5) * .3,
+                tz: .45 * (gi % 2 === 0 ? 1 : -1.2) + (rnd() - .5) * .3
+            });
+        }
+
+        const baseStars = W < 480 ? 800 : isMobile ? 1250 : lowPower ? 1800 : 2600;
+        const n = Math.floor(baseStars / numG * 1.5);
+        const nh = isMobile ? 22 : 34;
+        const nd = isMobile ? 32 : 52;
+        const per = n + nh + nd, tot = per * numG;
+        const F = () => new Float32Array(tot);
+        S = {
+            n: tot, nd: nd * numG,
+            x: F(), y: F(), z: F(),
+            vx: F(), vy: F(), vz: F(),
+            sz: F(), a: F(), fl: F(),
+            k: new Uint8Array(tot),
+            big: new Uint8Array(tot),
+            dead: new Uint8Array(tot),
+            cs: new Array(tot)
+        };
+
+        let i = 0;
+        for (const q of g) {
+            const c1 = Math.cos(q.tx), s1 = Math.sin(q.tx), c2 = Math.cos(q.tz), s2 = Math.sin(q.tz);
+            const place = (lx, ly, lz, vx, vy) => {
+                const y1 = ly * c1 - lz * s1, z1 = ly * s1 + lz * c1, vy1 = vy * c1, vz1 = vy * s1;
+                S.x[i] = q.x + lx * c2 - y1 * s2;
+                S.y[i] = q.y + lx * s2 + y1 * c2;
+                S.z[i] = q.z + z1;
+                S.vx[i] = q.vx + vx * c2 - vy1 * s2;
+                S.vy[i] = q.vy + vx * s2 + vy1 * c2;
+                S.vz[i] = q.vz + vz1;
+            };
+            const disc = (f, da) => {
+                const r = R * f, a = Math.floor(rnd() * 2) * Math.PI + f * 3.4 + da, v = vc(r) * q.dir * (1 + gauss() * .03);
+                place(Math.cos(a) * r, Math.sin(a) * r, gauss() * R * .015 * (1 + f), -Math.sin(a) * v, Math.cos(a) * v);
+            };
+            for (let j = 0; j < per; j++, i++) {
+                const b = .22 + .65 * Math.pow(rnd(), 3);
+                if (j < n) {
+                    const u = rnd();
+                    let k;
+                    if (u < .18) {
+                        k = 0;
+                        const rr = R * (.03 + .22 * Math.pow(rnd(), 1.5)), th = Math.acos(2 * rnd() - 1), ph = rnd() * TAU;
+                        const v = vc(rr) * (.55 + .35 * rnd()) * q.dir;
+                        place(rr * Math.sin(th) * Math.cos(ph), rr * Math.sin(th) * Math.sin(ph), rr * Math.cos(th) * .7, -Math.sin(ph) * v, Math.cos(ph) * v);
+                    } else {
+                        k = u < .58 ? 1 : 2;
+                        disc(.1 + .9 * Math.pow(rnd(), .65), gauss() * (k === 1 ? .16 : .5));
+                    }
+                    S.k[i] = k;
+                    S.a[i] = b;
+                    S.big[i] = rnd() < .045 ? 1 : 0;
+                    S.sz[i] = S.big[i] ? 6 + b * 10 : .75 + b;
+                    const pal = PAL[k];
+                    S.cs[i] = `rgba(${pal[Math.floor(rnd() * pal.length)]},${b})`;
+                } else if (j < n + nh) {
+                    disc(.3 + .7 * rnd(), gauss() * .1);
+                    S.k[i] = 3;
+                    S.sz[i] = 24 + rnd() * 28;
+                    S.a[i] = .038 + .05 * rnd();
+                } else {
+                    disc(.2 + .75 * rnd(), -.18 + gauss() * .08);
+                    S.k[i] = 4;
+                    S.sz[i] = 22 + rnd() * 24;
+                }
+            }
+        }
+        bl = null;
+        bh = null;
+        initTime = 0;
+    }
+
+    function formBlackHole(cx, cy, cz) {
+        if (bh) return;
+        bl = { x: cx, y: cy, z: cz, t: 0 };
+        const streakCount = isMobile ? 55 : 85;
+        const streaks = [];
+        for (let i = 0; i < streakCount; i++) {
+            streaks.push({
+                r: 1.35 + Math.pow(rnd(), 1.35) * 4.2,
+                ang: rnd() * TAU,
+                spd: (2.8 + rnd() * 3.5) * (i % 7 === 0 ? 1.2 : 1),
+                len: .35 + rnd() * .85,
+                w: .8 + rnd() * 2.2,
+                temp: rnd()
+            });
+        }
+        bh = {
+            x: cx, y: cy, z: cz,
+            age: 0,
+            r0: Math.max(24, Math.min(W, H) * .06),
+            spin: 0,
+            streaks
+        };
+    }
+
+    function syncGalaxyBoxView(maxSep) {
+        let targetCardAlpha = 0.22;
+        let targetItemAlpha = 0.075;
+        let targetNavAlpha = 0.38;
+        let targetBorderAlpha = 0.32;
+        let targetGlowAlpha = 0.32;
+        let tint1 = '15, 23, 42';
+        let tint2 = '38, 24, 78';
+        let tint3 = '14, 36, 68';
+        let borderRgb = '129, 140, 248';
+
+        if (bh) {
+            const age = bh.age;
+            if (age < BH_ACTIVE_DUR) {
+                targetCardAlpha = 0.10;
+                targetItemAlpha = 0.04;
+                targetNavAlpha = 0.24;
+                targetBorderAlpha = 0.42;
+                targetGlowAlpha = 0.48;
+                tint1 = '24, 18, 48';
+                tint2 = '52, 26, 72';
+                tint3 = '45, 28, 55';
+                borderRgb = '165, 180, 252';
+            } else {
+                const absorbProg = Math.min(1, (age - BH_ACTIVE_DUR) / BH_ABSORB_DUR);
+                targetCardAlpha = 0.08 + 0.11 * absorbProg;
+                targetItemAlpha = 0.03 + 0.04 * absorbProg;
+                targetNavAlpha = 0.20 + 0.14 * absorbProg;
+                targetBorderAlpha = 0.26 + 0.28 * Math.sin(absorbProg * Math.PI);
+                targetGlowAlpha = 0.38 + 0.25 * Math.sin(absorbProg * Math.PI);
+                tint1 = '12, 22, 48';
+                tint2 = '32, 20, 72';
+                tint3 = '16, 42, 78';
+                borderRgb = '56, 189, 248';
+            }
+        } else if (DD > 0) {
+            const proximity = Math.max(0, Math.min(1, 1 - (maxSep / (DD * 0.65))));
+            targetCardAlpha = 0.23 - proximity * 0.11;
+            targetItemAlpha = 0.075 - proximity * 0.03;
+            targetNavAlpha = 0.38 - proximity * 0.12;
+            targetBorderAlpha = 0.28 + proximity * 0.14;
+            targetGlowAlpha = 0.28 + proximity * 0.16;
+        }
+
+        smoothAlpha += (targetCardAlpha - smoothAlpha) * 0.08;
+        rootStyle.setProperty('--card-alpha', smoothAlpha.toFixed(3));
+        rootStyle.setProperty('--item-alpha', targetItemAlpha.toFixed(3));
+        rootStyle.setProperty('--nav-alpha', targetNavAlpha.toFixed(3));
+        rootStyle.setProperty('--border-alpha', targetBorderAlpha.toFixed(3));
+        rootStyle.setProperty('--glow-alpha', targetGlowAlpha.toFixed(3));
+        rootStyle.setProperty('--nebula-tint-1', tint1);
+        rootStyle.setProperty('--nebula-tint-2', tint2);
+        rootStyle.setProperty('--nebula-tint-3', tint3);
+        rootStyle.setProperty('--border-rgb', borderRgb);
+    }
+
+    const TL = 7.5, T0 = .15, HOT = [[255, 250, 235], [255, 200, 90], [255, 105, 40], [150, 45, 70]];
+    const bs = tau => {
+        const tt = Math.max(tau, T0), r = DD * .18 * .48 * Math.pow(tt / T0, .4);
+        return [r, .4 * r / tt];
+    };
+    function temp(a) {
+        const s = Math.min(1, Math.max(0, a)) * (HOT.length - 1);
+        const idx = Math.min(HOT.length - 2, Math.floor(s)), f = s - idx;
+        const c0 = HOT[idx], c1 = HOT[idx + 1];
+        return [
+            Math.round(c0[0] + (c1[0] - c0[0]) * f),
+            Math.round(c0[1] + (c1[1] - c0[1]) * f),
+            Math.round(c0[2] + (c1[2] - c0[2]) * f)
+        ];
+    }
+
+    function drawBlast(u, v) {
+        if (!bl || bl.t > TL) return;
+        const [r] = bs(bl.t), prog = bl.t / TL, fade = Math.pow(1 - prog, 1.5);
+        const [cr, cg, cb] = temp(prog);
+        const rad = Math.max(8, r);
+        const gr = x.createRadialGradient(u, v, rad * .15, u, v, rad * 1.25);
+        gr.addColorStop(0, `rgba(255,255,255,${.45 * fade * Math.max(0, 1 - bl.t * 1.2)})`);
+        gr.addColorStop(.55, `rgba(${cr},${cg},${cb},0)`);
+        gr.addColorStop(.82, `rgba(${cr},${cg},${cb},${.42 * fade})`);
+        gr.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+        x.fillStyle = gr;
+        x.beginPath();
+        x.arc(u, v, rad * 1.25, 0, TAU);
+        x.fill();
+    }
+
+    function drawBlackHole(u, v) {
+        if (!bh) return;
+        const age = bh.age;
+        const isAbsorbing = age >= BH_ACTIVE_DUR;
+        const absorbProg = isAbsorbing ? Math.min(1, (age - BH_ACTIVE_DUR) / BH_ABSORB_DUR) : 0;
+
+        const birthScale = Math.min(1, Math.pow(age / .85, .55));
+        const collapseCurve = isAbsorbing
+            ? (absorbProg < .72
+                ? 1 + .18 * Math.sin(absorbProg / .72 * Math.PI)
+                : Math.max(0, Math.pow(1 - (absorbProg - .72) / .28, 2.2)))
+            : 1;
+        const diskShrink = isAbsorbing ? Math.max(.04, Math.pow(1 - absorbProg, 1.35)) : 1;
+
+        const Rs = bh.r0 * birthScale * collapseCurve;
+        if (Rs < .5) return;
+
+        const tilt = .27;
+        const diskRot = -.22;
+
+        x.save();
+        x.translate(u, v);
+        x.rotate(diskRot);
+
+        // 1. Lensing halo
+        x.globalCompositeOperation = 'lighter';
+        const haloRad = Rs * (4.2 * diskShrink + 1.4);
+        const haloGr = x.createRadialGradient(0, 0, Rs * .85, 0, 0, haloRad);
+        const haloAlpha = (.4 + .15 * Math.sin(age * 5)) * (1 - absorbProg * .65);
+        haloGr.addColorStop(0, `rgba(255, 220, 165, ${haloAlpha})`);
+        haloGr.addColorStop(.28, `rgba(255, 140, 60, ${haloAlpha * .68})`);
+        haloGr.addColorStop(.62, `rgba(130, 90, 245, ${haloAlpha * .32})`);
+        haloGr.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        x.fillStyle = haloGr;
+        x.beginPath();
+        x.arc(0, 0, haloRad, 0, TAU);
+        x.fill();
+
+        // 2. Polar jets
+        const jetAlpha = birthScale * (1 - Math.pow(absorbProg, 1.2)) * (.36 + .1 * Math.sin(age * 9));
+        if (jetAlpha > .02) {
+            const jetLen = Rs * (5.8 * diskShrink + 1.2);
+            const jetW = Rs * .55;
+            for (const dir of [-1, 1]) {
+                const jg = x.createLinearGradient(0, 0, 0, dir * jetLen);
+                jg.addColorStop(0, `rgba(220, 235, 255, ${jetAlpha * 1.2})`);
+                jg.addColorStop(.25, `rgba(140, 175, 255, ${jetAlpha * .75})`);
+                jg.addColorStop(.65, `rgba(110, 90, 255, ${jetAlpha * .32})`);
+                jg.addColorStop(1, 'rgba(80, 60, 200, 0)');
+                x.fillStyle = jg;
+                x.beginPath();
+                x.moveTo(-jetW * .18, dir * Rs * .75);
+                x.lineTo(-jetW, dir * jetLen);
+                x.lineTo(jetW, dir * jetLen);
+                x.lineTo(jetW * .18, dir * Rs * .75);
+                x.closePath();
+                x.fill();
+            }
+        }
+
+        // 3. Lensed arches
+        const archOuter = Rs * (2.25 * Math.max(.45, diskShrink));
+        for (const side of [-1, 1]) {
+            x.save();
+            x.scale(1.18, side === -1 ? .92 : .76);
+            const ag = x.createRadialGradient(0, side * Rs * .12, Rs * .92, 0, side * Rs * .18, archOuter);
+            ag.addColorStop(0, 'rgba(255, 250, 240, 0)');
+            ag.addColorStop(.12, `rgba(255, 245, 220, ${.78 * birthScale})`);
+            ag.addColorStop(.32, `rgba(255, 175, 85, ${.56 * birthScale})`);
+            ag.addColorStop(.65, `rgba(215, 75, 35, ${.28 * birthScale})`);
+            ag.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            x.fillStyle = ag;
+            x.beginPath();
+            x.arc(0, 0, archOuter, side === -1 ? Math.PI * 1.04 : .04, side === -1 ? Math.PI * 1.96 : Math.PI * .96);
+            x.fill();
+            x.restore();
+        }
+
+        // 4. Accretion disk
+        const diskMaxR = Rs * (4.4 * diskShrink + .55);
+        const drawDiskHalf = (isFront) => {
+            x.save();
+            x.scale(1, tilt);
+            const startAng = isFront ? 0 : Math.PI;
+            const endAng = isFront ? Math.PI : TAU;
+
+            const dg = x.createRadialGradient(-Rs * .35, 0, Rs * 1.05, 0, 0, diskMaxR);
+            dg.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            dg.addColorStop(.05, `rgba(255, 252, 240, ${.94 * birthScale})`);
+            dg.addColorStop(.18, `rgba(255, 210, 125, ${.8 * birthScale})`);
+            dg.addColorStop(.45, `rgba(255, 120, 45, ${.52 * birthScale})`);
+            dg.addColorStop(.78, `rgba(175, 40, 30, ${.26 * birthScale})`);
+            dg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            x.fillStyle = dg;
+            x.beginPath();
+            x.arc(0, 0, diskMaxR, startAng, endAng);
+            x.lineTo(0, 0);
+            x.closePath();
+            x.fill();
+
+            for (const st of bh.streaks) {
+                const curR = Rs * (1.05 + (st.r - 1.05) * diskShrink);
+                if (curR > diskMaxR || curR < Rs * 1.02) continue;
+                const a0 = (st.ang + bh.spin * st.spd) % TAU;
+                const inHalf = isFront ? (a0 >= 0 && a0 <= Math.PI) : (a0 > Math.PI && a0 < TAU);
+                if (!inHalf) continue;
+                const doppler = .65 + .45 * Math.max(-.6, -Math.cos(a0));
+                const a1 = a0 + st.len * (.45 + .55 * diskShrink);
+                x.strokeStyle = st.temp < .35
+                    ? `rgba(255, 245, 225, ${.56 * doppler * birthScale})`
+                    : st.temp < .7
+                        ? `rgba(255, 175, 80, ${.44 * doppler * birthScale})`
+                        : `rgba(235, 85, 45, ${.36 * doppler * birthScale})`;
+                x.lineWidth = st.w * (isFront ? 1.25 : .9);
+                x.beginPath();
+                x.arc(0, 0, curR, a0, Math.min(endAng, a1));
+                x.stroke();
+            }
+            x.restore();
+        };
+
+        drawDiskHalf(false);
+
+        // 5. Event horizon shadow
+        x.globalCompositeOperation = 'source-over';
+        const shadowGr = x.createRadialGradient(0, 0, Rs * .78, 0, 0, Rs * 1.06);
+        shadowGr.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        shadowGr.addColorStop(.86, 'rgba(0, 0, 0, 1)');
+        shadowGr.addColorStop(.96, 'rgba(5, 3, 12, .92)');
+        shadowGr.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        x.fillStyle = shadowGr;
+        x.beginPath();
+        x.arc(0, 0, Rs * 1.06, 0, TAU);
+        x.fill();
+
+        // 6. Photon ring
+        x.globalCompositeOperation = 'lighter';
+        x.lineWidth = Math.max(1.4, Rs * .065);
+        const prGr = x.createLinearGradient(-Rs, 0, Rs, 0);
+        prGr.addColorStop(0, `rgba(255, 252, 245, ${.96 * birthScale})`);
+        prGr.addColorStop(.5, `rgba(255, 200, 120, ${.78 * birthScale})`);
+        prGr.addColorStop(1, `rgba(255, 120, 60, ${.48 * birthScale})`);
+        x.strokeStyle = prGr;
+        x.beginPath();
+        x.arc(0, 0, Rs * .98, 0, TAU);
+        x.stroke();
+
+        // 7. Front half of disk
+        drawDiskHalf(true);
+
+        // 8. Implosion ring and final flash
+        if (isAbsorbing) {
+            const implosionR = Rs * (3.6 * (1 - absorbProg) + .2);
+            x.strokeStyle = `rgba(195, 220, 255, ${.58 * Math.sin(absorbProg * Math.PI)})`;
+            x.lineWidth = 1.8;
+            x.beginPath();
+            x.arc(0, 0, implosionR, 0, TAU);
+            x.stroke();
+
+            if (absorbProg > .75) {
+                const pFlash = Math.sin(((absorbProg - .75) / .25) * Math.PI);
+                const fg = x.createRadialGradient(0, 0, 0, 0, 0, bh.r0 * 2.4 * pFlash + 4);
+                fg.addColorStop(0, `rgba(255, 255, 255, ${.95 * pFlash})`);
+                fg.addColorStop(.35, `rgba(180, 215, 255, ${.65 * pFlash})`);
+                fg.addColorStop(1, 'rgba(120, 150, 255, 0)');
+                x.fillStyle = fg;
+                x.beginPath();
+                x.arc(0, 0, bh.r0 * 2.4 * pFlash + 4, 0, TAU);
+                x.fill();
+            }
+        }
+
+        x.restore();
+    }
+
+    function step(dt) {
+        const ng = g.length;
+        let cx = 0, cy = 0, cz = 0, maxSep = 0;
+        for (let a = 0; a < ng; a++) {
+            cx += g[a].x / ng;
+            cy += g[a].y / ng;
+            cz += g[a].z / ng;
+            for (let b = a + 1; b < ng; b++) {
+                const ax = g[b].x - g[a].x, ay = g[b].y - g[a].y, az = g[b].z - g[a].z;
+                const dist = Math.hypot(ax, ay, az);
+                if (dist > maxSep) maxSep = dist;
+                const r2 = dist * dist + e2;
+                const f = (GM / (r2 * Math.sqrt(r2)) + VH2 * Math.exp(-r2 / RT2) / (r2 + RC2)) * dt;
+                g[a].vx += ax * f; g[a].vy += ay * f; g[a].vz += az * f;
+                g[b].vx -= ax * f; g[b].vy -= ay * f; g[b].vz -= az * f;
+
+            }
+        }
+
+        syncGalaxyBoxView(maxSep);
+
+        for (const q of g) {
+            if (bh) {
+                q.x += (bh.x - q.x) * Math.min(1, dt * 5);
+                q.y += (bh.y - q.y) * Math.min(1, dt * 5);
+                q.z += (bh.z - q.z) * Math.min(1, dt * 5);
+                q.vx *= .85; q.vy *= .85; q.vz *= .85;
+            } else {
+                q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt;
+            }
+        }
+
+        if (bh) {
+            bh.age += dt;
+            bh.spin += dt * (bh.age >= BH_ACTIVE_DUR ? 2.6 : 1.55);
+            if (bh.age >= BH_TOTAL_DUR) {
+                init(true);
+                return;
+            }
+        }
+
+        if (bl) bl.t += dt;
+
+        const hw = W / 2, hh = H / 2;
+        const isAbsorbing = bh && bh.age >= BH_ACTIVE_DUR;
+        const absorbProg = isAbsorbing ? Math.min(1, (bh.age - BH_ACTIVE_DUR) / BH_ABSORB_DUR) : 0;
+        const swallowRad2 = bh ? Math.pow(bh.r0 * (isAbsorbing ? .95 : .72), 2) : 0;
+
+        for (let i = 0; i < S.n; i++) {
+            if (S.dead[i]) continue;
+            let sx = 0, sy = 0, sz = 0;
+
+            if (bh) {
+                const rx = bh.x - S.x[i], ry = bh.y - S.y[i], rz = bh.z - S.z[i];
+                const rr = rx * rx + ry * ry + rz * rz + e2 * .22;
+                const dist = Math.sqrt(rr);
+
+                if (rr < swallowRad2) {
+                    S.dead[i] = 1;
+                    continue;
+                }
+
+                const bhMassMult = isAbsorbing ? (2.2 + 9.5 * absorbProg * absorbProg) : 1.55;
+                const k = bhMassMult * (GM / (rr * dist) + VH2 * 2.2 / (rr + RC2 * .25));
+                sx += rx * k; sy += ry * k; sz += rz * k;
+
+                const swirl = (isAbsorbing ? 1.65 : .75) * Math.sqrt(GM / (dist + 18)) / (dist + 24);
+                sx += -ry * swirl;
+                sy += rx * swirl;
+
+                const damp = isAbsorbing ? (1 - dt * (1.35 + 3.8 * absorbProg)) : (1 - dt * .22);
+                S.vx[i] *= damp; S.vy[i] *= damp; S.vz[i] *= damp;
+                if (isAbsorbing) {
+                    const pullIn = dt * (1.1 + 4.8 * absorbProg * absorbProg);
+                    S.x[i] += rx * pullIn;
+                    S.y[i] += ry * pullIn;
+                    S.z[i] += rz * pullIn;
+                }
+            } else {
+                for (const q of g) {
+                    const rx = q.x - S.x[i], ry = q.y - S.y[i], rz = q.z - S.z[i];
+                    const rr = rx * rx + ry * ry + rz * rz + e2;
+                    const k = GM / (rr * Math.sqrt(rr)) + VH2 * Math.exp(-rr / RT2) / (rr + RC2);
+                    sx += rx * k; sy += ry * k; sz += rz * k;
+                }
+            }
+
+            if (pw > .01) {
+                const rx = (mx - hw) / ZM - S.x[i], ry = (my - hh) / ZM - S.y[i], r = Math.hypot(rx, ry);
+                if (r * ZM < PR) {
+                    const u = 1 - r * ZM / PR, k = PA * pw * u * u / (r + 30);
+                    sx -= rx * k; sy -= ry * k;
+                }
+            }
+
+            S.vx[i] += sx * dt; S.vy[i] += sy * dt; S.vz[i] += sz * dt;
+            S.x[i] += S.vx[i] * dt; S.y[i] += S.vy[i] * dt; S.z[i] += S.vz[i] * dt;
+        }
+    }
+
+    function draw() {
+        const hw = W / 2, hh = H / 2, yaw = .35 * Math.sin(t * .07), cy = Math.cos(yaw), sy = Math.sin(yaw), ns = S.n;
+        const qx = hw + (mx - hw) / ZM, qy = hh + (my - hh) / ZM;
+
+        x.globalCompositeOperation = 'source-over';
+        x.globalAlpha = 1;
+        x.fillStyle = '#02030a';
+        x.fillRect(0, 0, W, H);
+
+        x.globalCompositeOperation = 'lighter';
+        for (const s of bg) {
+            x.fillStyle = s[5] + s[4] * (.7 + .3 * Math.sin(t * 1.4 + s[3])) + ')';
+            x.fillRect(s[0], s[1], s[2], s[2]);
+        }
+
+        x.save();
+        x.translate(hw, hh);
+        x.scale(ZM, ZM);
+        x.translate(-hw, -hh);
+
+        const proj = (X0, Y0, Z0) => {
+            const X = X0 * cy + Z0 * sy, Z = -X0 * sy + Z0 * cy, p = 1 / (1 - Z / (DD * 4));
+            U = hw + X * p; V = hh + Y0 * p; P = p;
+        };
+
+        let bhu = hw, bhv = hh;
+        if (bh) {
+            proj(bh.x, bh.y, bh.z);
+            bhu = U; bhv = V;
+        }
+
+        for (let i = 0; i < ns; i++) {
+            if (S.dead[i]) continue;
+            proj(S.x[i], S.y[i], S.z[i]);
+            const u = U, v = V, p = P;
+            if (u < -50 || u > W + 50 || v < -50 || v > H + 50) continue;
+            const k = S.k[i];
+            if (k === 4) continue;
+            if (k === 3) {
+                const w = S.sz[i] * (1 + S.fl[i] * 1.5);
+                x.globalAlpha = Math.min(1, S.a[i] * (1 + 12 * S.fl[i]));
+                x.drawImage(spr[3], u - w / 2, v - w / 2, w, w);
+                continue;
+            }
+            let hot = 0;
+            if (pw > .01) {
+                const ddx = (u - qx) * ZM, ddy = (v - qy) * ZM, dd = ddx * ddx + ddy * ddy;
+                if (dd < 14400) hot = (1 - Math.sqrt(dd) / 120) * pw;
+            }
+
+            if (bh) {
+                const dx = bhu - u, dy = bhv - v, d2 = dx * dx + dy * dy;
+                const tidalZone = bh.r0 * 4.5;
+                if (d2 < tidalZone * tidalZone && d2 > 4) {
+                    const dist = Math.sqrt(d2), pull = 1 - dist / tidalZone;
+                    x.globalAlpha = Math.min(1, S.a[i] + pull * .65);
+                    x.strokeStyle = pull > .5 ? 'rgba(255,235,200,0.85)' : S.cs[i];
+                    x.lineWidth = Math.max(1, S.sz[i] * .45);
+                    x.beginPath();
+                    x.moveTo(u, v);
+                    x.lineTo(u + (dx * .32 - dy * .45) * pull, v + (dy * .32 + dx * .45) * pull);
+                    x.stroke();
+                    continue;
+                }
+            }
+
+            if (S.big[i] || hot > .15) {
+                const s2 = (S.big[i] ? S.sz[i] : 5) * (1 + hot * 1.6);
+                x.globalAlpha = Math.min(1, S.a[i] * .8 + hot);
+                x.drawImage(spr[SP[k]], u - s2 / 2, v - s2 / 2, s2, s2);
+                if (S.big[i] && S.sz[i] > 9) {
+                    x.globalAlpha *= .4;
+                    const L = s2 * 2.2;
+                    x.fillStyle = '#fff';
+                    x.fillRect(u - L, v - .35, 2 * L, .7);
+                    x.fillRect(u - .35, v - L, .7, 2 * L);
+                }
+            } else {
+                x.globalAlpha = 1;
+                x.fillStyle = S.cs[i];
+                const z = S.sz[i] * p / Math.sqrt(ZM);
+                x.fillRect(u, v, z, z);
+            }
+        }
+
+        const R = DD * .18;
+        const bulgeFade = bh ? Math.max(0, 1 - bh.age * 1.6) : 1;
+        if (bulgeFade > .01) {
+            const sep = g.length > 1 ? Math.hypot(g[1].x - g[0].x, g[1].y - g[0].y, g[1].z - g[0].z) : DD;
+            const m = Math.max(0, 1 - sep / (DD * .35));
+            for (const q of g) {
+                proj(q.x, q.y, q.z);
+                const u = U, v = V;
+                x.globalAlpha = (.5 + .4 * m) * bulgeFade;
+                const s1 = R * (1.1 + .6 * m);
+                x.drawImage(spr[0], u - s1 / 2, v - s1 / 2, s1, s1);
+                x.globalAlpha = .85 * bulgeFade;
+                const s2 = R * .35;
+                x.drawImage(spr[1], u - s2 / 2, v - s2 / 2, s2, s2);
+                if (m > 0) {
+                    x.globalAlpha = .25 * m * bulgeFade;
+                    const s3 = R * 3 * m;
+                    x.drawImage(spr[2], u - s3 / 2, v - s3 / 2, s3, s3);
+                }
+            }
+        }
+
+        if (bl) { proj(bl.x, bl.y, bl.z); drawBlast(U, V); }
+        if (pw > .01) {
+            x.globalAlpha = .09 * pw;
+            x.drawImage(spr[2], qx - 110 / ZM, qy - 110 / ZM, 220 / ZM, 220 / ZM);
+        }
+
+        x.globalCompositeOperation = 'source-over';
+        x.globalAlpha = .14;
+        for (let i = 0; i < S.n; i++) {
+            if (S.dead[i] || S.k[i] !== 4) continue;
+            proj(S.x[i], S.y[i], S.z[i]);
+            const u = U, v = V;
+            x.drawImage(spr[4], u - S.sz[i] / 2, v - S.sz[i] / 2, S.sz[i], S.sz[i]);
+        }
+
+        if (bh) {
+            drawBlackHole(bhu, bhv);
+        }
+
+        x.restore();
+
+        // Multi-pass bloom
+        b1c.clearRect(0, 0, b1.width, b1.height);
+        b2c.clearRect(0, 0, b2.width, b2.height);
+        b1c.drawImage(c, 0, 0, b1.width, b1.height);
+        b2c.drawImage(b1, 0, 0, b2.width, b2.height);
+        x.save();
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        x.globalCompositeOperation = 'lighter';
+        x.globalAlpha = .38;
+        x.drawImage(b1, 0, 0, c.width, c.height);
+        x.globalAlpha = .42;
+        x.drawImage(b2, 0, 0, c.width, c.height);
+        x.restore();
+
+        // Keep the event horizon pitch-black after bloom
+        if (bh) {
+            const age = bh.age;
+            const isAbsorbing = age >= BH_ACTIVE_DUR;
+            const absorbProg = isAbsorbing ? Math.min(1, (age - BH_ACTIVE_DUR) / BH_ABSORB_DUR) : 0;
+            const birthScale = Math.min(1, Math.pow(age / .85, .55));
+            const collapseCurve = isAbsorbing
+                ? (absorbProg < .72 ? 1 + .18 * Math.sin(absorbProg / .72 * Math.PI) : Math.max(0, Math.pow(1 - (absorbProg - .72) / .28, 2.2)))
+                : 1;
+            const Rs = bh.r0 * birthScale * collapseCurve * ZM;
+            if (Rs > 1) {
+                const sx = hw + (bhu - hw) * ZM, sy = hh + (bhv - hh) * ZM;
+                x.save();
+                x.globalCompositeOperation = 'source-over';
+                const sg = x.createRadialGradient(sx, sy, Rs * .55, sx, sy, Rs * .92);
+                sg.addColorStop(0, 'rgba(0,0,0,0.96)');
+                sg.addColorStop(.75, 'rgba(0,0,0,0.88)');
+                sg.addColorStop(1, 'rgba(0,0,0,0)');
+                x.fillStyle = sg;
+                x.beginPath();
+                x.arc(sx, sy, Rs * .92, 0, TAU);
+                x.fill();
+                x.restore();
+            }
+        }
+
+        // Stardust pointer trail
+        if (pointerStars.length > 0) {
+            x.save();
+            x.globalCompositeOperation = 'lighter';
+            for (let i = pointerStars.length - 1; i >= 0; i--) {
+                const star = pointerStars[i];
+                star.x += star.vx;
+                star.y += star.vy;
+                star.alpha -= star.decay;
+                if (star.alpha <= 0) {
+                    pointerStars.splice(i, 1);
+                } else {
+                    x.globalAlpha = star.alpha;
+                    const sz = star.radius * 4.8;
+                    x.drawImage(spr[star.sprIdx], star.x - sz / 2, star.y - sz / 2, sz, sz);
+                }
+            }
+            x.restore();
+        }
+    }
+
+    function addTrailParticles(px, py) {
+        mx = px;
+        my = py;
+        pt = performance.now();
+        if (pointerStars.length > (isMobile ? 45 : 90)) return;
+        const count = isMobile ? 2 : 3;
+        for (let i = 0; i < count; i++) {
+            pointerStars.push({
+                x: px + (rnd() - 0.5) * 14,
+                y: py + (rnd() - 0.5) * 14,
+                radius: rnd() * 2.0 + 0.9,
+                vx: (rnd() - 0.5) * 1.5,
+                vy: (rnd() - 0.5) * 1.5,
+                alpha: 1,
+                decay: rnd() * 0.028 + 0.018,
+                sprIdx: 5 + Math.floor(rnd() * 3)
+            });
+        }
+    }
+
+    window.addEventListener('pointermove', e => addTrailParticles(e.clientX, e.clientY), { passive: true });
+    window.addEventListener('touchmove', e => {
+        if (e.touches.length > 0) {
+            addTrailParticles(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    }, { passive: true });
+    window.addEventListener('pointerleave', () => { pt = 0; });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            const widthChanged = Math.abs(window.innerWidth - W) > 8;
+            const heightBigChange = Math.abs(window.innerHeight - H) > 140;
+            size();
+            if (widthChanged || heightBigChange) {
+                init(false);
+            }
+        }, 120);
+    }, { passive: true });
+
+    size();
+    init(false);
+    requestAnimationFrame(() => { c.style.opacity = '1'; });
+
+    function loop(now) {
+        const dt = Math.min(.035, (now - (last || now)) / 1000);
+        last = now;
+        t += dt;
+        const activePointer = (now - pt) < 220;
+        pw += ((activePointer ? 1 : 0) - pw) * Math.min(1, dt * 6);
+        step(dt);
+        draw();
+        requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+})();
+    </script>
+</body>
+</html>
